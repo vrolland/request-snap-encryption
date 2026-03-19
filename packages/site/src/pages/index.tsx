@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import {
@@ -5,6 +6,7 @@ import {
   InstallFlaskButton,
   ReconnectButton,
   SendHelloButton,
+  GetEncryptionPublicKeyButton,
   Card,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
@@ -100,11 +102,33 @@ const ErrorMessage = styled.div`
   }
 `;
 
+const PublicKeyBlock = styled.code`
+  display: block;
+  margin-top: 1.6rem;
+  padding: 1rem;
+  word-break: break-all;
+  background-color: ${({ theme }) => theme.colors.background?.alternative};
+  border: 1px solid ${({ theme }) => theme.colors.border?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
+const PublicKeyError = styled.div`
+  margin-top: 1.6rem;
+  padding: 1rem;
+  word-break: break-word;
+  color: ${({ theme }) => theme.colors.error?.alternative};
+  background-color: ${({ theme }) => theme.colors.error?.muted};
+  border: 1px solid ${({ theme }) => theme.colors.error?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
 const Index = () => {
   const { error } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
   const requestSnap = useRequestSnap();
   const invokeSnap = useInvokeSnap();
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [publicKeyError, setPublicKeyError] = useState<string | null>(null);
 
   const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
     ? isFlask
@@ -112,6 +136,35 @@ const Index = () => {
 
   const handleSendHelloClick = async () => {
     await invokeSnap({ method: 'hello' });
+  };
+
+  const handleGetEncryptionPublicKeyClick = async () => {
+    const result = await invokeSnap({ method: 'getEncryptionPublicKey' });
+
+    setPublicKey(null);
+    setPublicKeyError(null);
+
+    // The snap returns the public key as a string.
+    if (typeof result === 'string') {
+      setPublicKey(result);
+      return;
+    }
+
+    // Fallback: in case the snap returns a structured object.
+    if (result && typeof result === 'object' && 'publicKey' in result) {
+      setPublicKey(String((result as { publicKey: unknown }).publicKey));
+      return;
+    }
+
+    if (result === true) {
+      setPublicKeyError(
+        'Le snap renvoie seulement `true` (confirmation OK). Rebuild/reconnect/re-installe le snap pour qu’il retourne la clé publique.',
+      );
+      return;
+    }
+
+    setPublicKey(null);
+    setPublicKeyError('Réponse inattendue du snap.');
   };
 
   return (
@@ -190,6 +243,35 @@ const Index = () => {
             !shouldDisplayReconnectButton(installedSnap)
           }
         />
+
+        <Card
+          content={{
+            title: 'Get Encryption Public Key',
+            description: (
+              <>
+                Get the encryption public key from a specific address.
+                {publicKey ? (
+                  <PublicKeyBlock>{publicKey}</PublicKeyBlock>
+                ) : null}
+                {publicKeyError ? <PublicKeyError>{publicKeyError}</PublicKeyError> : null}
+              </>
+            ),
+            button: (
+              <GetEncryptionPublicKeyButton
+                onClick={handleGetEncryptionPublicKeyClick}
+                disabled={!installedSnap}
+              />
+            ),
+          }}
+          disabled={!installedSnap}
+          fullWidth={
+            isMetaMaskReady &&
+            Boolean(installedSnap) &&
+            !shouldDisplayReconnectButton(installedSnap)
+          }
+        />
+
+
         <Notice>
           <p>
             Please note that the <b>snap.manifest.json</b> and{' '}
