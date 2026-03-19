@@ -4,6 +4,8 @@ import { Box, Text, Bold } from '@metamask/snaps-sdk/jsx';
 import { getBIP44AddressKeyDeriver } from "@metamask/key-tree";
 
 
+
+
 /**
  * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
  *

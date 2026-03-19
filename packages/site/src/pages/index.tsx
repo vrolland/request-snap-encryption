@@ -7,6 +7,7 @@ import {
   ReconnectButton,
   SendHelloButton,
   GetEncryptionPublicKeyButton,
+  EncryptMessageButton,
   Card,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
@@ -16,6 +17,7 @@ import {
   useMetaMaskContext,
   useRequestSnap,
 } from '../hooks';
+import { ecEncrypt } from '../utils/ec-utils';
 import { isLocalSnap, shouldDisplayReconnectButton } from '../utils';
 
 const Container = styled.div`
@@ -122,6 +124,26 @@ const PublicKeyError = styled.div`
   border-radius: ${({ theme }) => theme.radii.default};
 `;
 
+const EncryptedBlock = styled.code`
+  display: block;
+  margin-top: 1.6rem;
+  padding: 1rem;
+  word-break: break-all;
+  background-color: ${({ theme }) => theme.colors.background?.alternative};
+  border: 1px solid ${({ theme }) => theme.colors.border?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
+const EncryptedError = styled.div`
+  margin-top: 1.6rem;
+  padding: 1rem;
+  word-break: break-word;
+  color: ${({ theme }) => theme.colors.error?.alternative};
+  background-color: ${({ theme }) => theme.colors.error?.muted};
+  border: 1px solid ${({ theme }) => theme.colors.error?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
 const Index = () => {
   const { error } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
@@ -129,6 +151,10 @@ const Index = () => {
   const invokeSnap = useInvokeSnap();
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [publicKeyError, setPublicKeyError] = useState<string | null>(null);
+  const [encryptedMessage, setEncryptedMessage] = useState<string | null>(null);
+  const [encryptedMessageError, setEncryptedMessageError] = useState<
+    string | null
+  >(null);
 
   const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
     ? isFlask
@@ -143,6 +169,8 @@ const Index = () => {
 
     setPublicKey(null);
     setPublicKeyError(null);
+    setEncryptedMessage(null);
+    setEncryptedMessageError(null);
 
     // The snap returns the public key as a string.
     if (typeof result === 'string') {
@@ -165,6 +193,30 @@ const Index = () => {
 
     setPublicKey(null);
     setPublicKeyError('Réponse inattendue du snap.');
+  };
+
+  const handleEncryptMessageClick = async () => {
+    setEncryptedMessage(null);
+    setEncryptedMessageError(null);
+
+    if (!publicKey) {
+      setEncryptedMessageError(
+        'Public key manquante. Clique d’abord sur “Get Encryption Public Key”.',
+      );
+      return;
+    }
+
+    try {
+      const encrypted = await ecEncrypt(
+        publicKey,
+        'hello this is request',
+      );
+      setEncryptedMessage(encrypted);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Erreur lors du chiffrement.';
+      setEncryptedMessageError(message);
+    }
   };
 
   return (
@@ -260,6 +312,35 @@ const Index = () => {
               <GetEncryptionPublicKeyButton
                 onClick={handleGetEncryptionPublicKeyClick}
                 disabled={!installedSnap}
+              />
+            ),
+          }}
+          disabled={!installedSnap}
+          fullWidth={
+            isMetaMaskReady &&
+            Boolean(installedSnap) &&
+            !shouldDisplayReconnectButton(installedSnap)
+          }
+        />
+
+        <Card
+          content={{
+            title: 'Encrypt message',
+            description: (
+              <>
+                Chiffre le message `hello this is request` avec la `publicKey`.
+                {encryptedMessage ? (
+                  <EncryptedBlock>{encryptedMessage}</EncryptedBlock>
+                ) : null}
+                {encryptedMessageError ? (
+                  <EncryptedError>{encryptedMessageError}</EncryptedError>
+                ) : null}
+              </>
+            ),
+            button: (
+              <EncryptMessageButton
+                onClick={handleEncryptMessageClick}
+                disabled={!installedSnap || !publicKey}
               />
             ),
           }}
