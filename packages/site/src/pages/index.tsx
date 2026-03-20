@@ -8,6 +8,7 @@ import {
   SendHelloButton,
   GetEncryptionPublicKeyButton,
   EncryptMessageButton,
+  DecryptMessageButton,
   Card,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
@@ -155,6 +156,12 @@ const Index = () => {
   const [encryptedMessageError, setEncryptedMessageError] = useState<
     string | null
   >(null);
+  const [decryptedMessage, setDecryptedMessage] = useState<string | null>(
+    null,
+  );
+  const [decryptedMessageError, setDecryptedMessageError] = useState<
+    string | null
+  >(null);
 
   const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
     ? isFlask
@@ -198,6 +205,8 @@ const Index = () => {
   const handleEncryptMessageClick = async () => {
     setEncryptedMessage(null);
     setEncryptedMessageError(null);
+    setDecryptedMessage(null);
+    setDecryptedMessageError(null);
 
     if (!publicKey) {
       setEncryptedMessageError(
@@ -216,6 +225,48 @@ const Index = () => {
       const message =
         err instanceof Error ? err.message : 'Erreur lors du chiffrement.';
       setEncryptedMessageError(message);
+    }
+  };
+
+  const handleDecryptMessageClick = async () => {
+    setDecryptedMessage(null);
+    setDecryptedMessageError(null);
+
+    if (!encryptedMessage) {
+      setDecryptedMessageError(
+        'Aucun message chiffré. Chiffre d’abord un message.',
+      );
+      return;
+    }
+
+    try {
+      const result = await invokeSnap({
+        method: 'decryptMessage',
+        params: { message: encryptedMessage },
+      });
+
+      if (typeof result === 'string') {
+        setDecryptedMessage(result);
+        return;
+      }
+
+      if (result && typeof result === 'object' && 'decrypted' in result) {
+        setDecryptedMessage(String((result as any).decrypted));
+        return;
+      }
+
+      if (result === true) {
+        setDecryptedMessageError(
+          'Le snap a renvoyé `true` au lieu du message déchiffré.',
+        );
+        return;
+      }
+
+      setDecryptedMessageError('Réponse inattendue du snap.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Erreur lors du déchiffrement.';
+      setDecryptedMessageError(message);
     }
   };
 
@@ -341,6 +392,35 @@ const Index = () => {
               <EncryptMessageButton
                 onClick={handleEncryptMessageClick}
                 disabled={!installedSnap || !publicKey}
+              />
+            ),
+          }}
+          disabled={!installedSnap}
+          fullWidth={
+            isMetaMaskReady &&
+            Boolean(installedSnap) &&
+            !shouldDisplayReconnectButton(installedSnap)
+          }
+        />
+
+        <Card
+          content={{
+            title: 'Decrypt on snap',
+            description: (
+              <>
+                Envoie le message chiffré au snap pour le déchiffrer.
+                {decryptedMessage ? (
+                  <EncryptedBlock>{decryptedMessage}</EncryptedBlock>
+                ) : null}
+                {decryptedMessageError ? (
+                  <EncryptedError>{decryptedMessageError}</EncryptedError>
+                ) : null}
+              </>
+            ),
+            button: (
+              <DecryptMessageButton
+                onClick={handleDecryptMessageClick}
+                disabled={!installedSnap || !encryptedMessage}
               />
             ),
           }}

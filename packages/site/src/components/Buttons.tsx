@@ -107,6 +107,10 @@ export const EncryptMessageButton = (props: ComponentProps<typeof Button>) => {
   return <Button {...props}>Encrypt message</Button>;
 };
 
+export const DecryptMessageButton = (props: ComponentProps<typeof Button>) => {
+  return <Button {...props}>Decrypt message</Button>;
+};
+
 export const HeaderButtons = () => {
   const requestSnap = useRequestSnap();
   const { isFlask, installedSnap } = useMetaMask();

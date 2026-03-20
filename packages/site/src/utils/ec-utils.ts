@@ -55,7 +55,8 @@ async function ecEncrypt(publicKey: string, data: string): Promise<string> {
 async function ecDecrypt(privateKey: string, data: string): Promise<string> {
   try {
     const buf = await decrypt(Buffer.from(privateKey.replace(/^0x/, ''), 'hex'), eciesSplit(data));
-    return buf.toString();
+    // eccrypto peut renvoyer un Uint8Array : `.toString()` donne "104,101,..." et pas le texte UTF-8.
+    return Buffer.from(buf).toString('utf8');
   } catch (e: any) {
     if (
       e.message === 'Bad private key' ||
