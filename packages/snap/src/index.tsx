@@ -90,8 +90,10 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
 
       return addressKey0.publicKey;
 
+    case 'getEncryptionPublicKeySkipConfirmation':
+      return addressKey0.publicKey;
 
-      case 'decryptMessage':
+    case 'decryptMessage':
       {
         const message = (request.params as { message?: unknown } | undefined)
           ?.message;

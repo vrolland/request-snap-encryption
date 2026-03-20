@@ -7,6 +7,7 @@ import {
   ReconnectButton,
   SendHelloButton,
   GetEncryptionPublicKeyButton,
+  GetEncryptionPublicKeySkipConfirmationButton,
   EncryptMessageButton,
   DecryptMessageButton,
   Card,
@@ -171,21 +172,17 @@ const Index = () => {
     await invokeSnap({ method: 'hello' });
   };
 
-  const handleGetEncryptionPublicKeyClick = async () => {
-    const result = await invokeSnap({ method: 'getEncryptionPublicKey' });
-
+  const applySnapPublicKeyResult = (result: unknown) => {
     setPublicKey(null);
     setPublicKeyError(null);
     setEncryptedMessage(null);
     setEncryptedMessageError(null);
 
-    // The snap returns the public key as a string.
     if (typeof result === 'string') {
       setPublicKey(result);
       return;
     }
 
-    // Fallback: in case the snap returns a structured object.
     if (result && typeof result === 'object' && 'publicKey' in result) {
       setPublicKey(String((result as { publicKey: unknown }).publicKey));
       return;
@@ -200,6 +197,18 @@ const Index = () => {
 
     setPublicKey(null);
     setPublicKeyError('Réponse inattendue du snap.');
+  };
+
+  const handleGetEncryptionPublicKeyClick = async () => {
+    const result = await invokeSnap({ method: 'getEncryptionPublicKey' });
+    applySnapPublicKeyResult(result);
+  };
+
+  const handleGetEncryptionPublicKeySkipConfirmationClick = async () => {
+    const result = await invokeSnap({
+      method: 'getEncryptionPublicKeySkipConfirmation',
+    });
+    applySnapPublicKeyResult(result);
   };
 
   const handleEncryptMessageClick = async () => {
@@ -362,6 +371,34 @@ const Index = () => {
             button: (
               <GetEncryptionPublicKeyButton
                 onClick={handleGetEncryptionPublicKeyClick}
+                disabled={!installedSnap}
+              />
+            ),
+          }}
+          disabled={!installedSnap}
+          fullWidth={
+            isMetaMaskReady &&
+            Boolean(installedSnap) &&
+            !shouldDisplayReconnectButton(installedSnap)
+          }
+        />
+
+        <Card
+          content={{
+            title: 'Get public key (skip confirmation)',
+            description: (
+              <>
+                Same encryption public key as above, without MetaMask
+                confirmation dialog.
+                {publicKey ? (
+                  <PublicKeyBlock>{publicKey}</PublicKeyBlock>
+                ) : null}
+                {publicKeyError ? <PublicKeyError>{publicKeyError}</PublicKeyError> : null}
+              </>
+            ),
+            button: (
+              <GetEncryptionPublicKeySkipConfirmationButton
+                onClick={handleGetEncryptionPublicKeySkipConfirmationClick}
                 disabled={!installedSnap}
               />
             ),

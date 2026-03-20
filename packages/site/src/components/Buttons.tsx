@@ -103,6 +103,12 @@ export const GetEncryptionPublicKeyButton = (props: ComponentProps<typeof Button
   return <Button {...props}>Get Encryption Public Key</Button>;
 };
 
+export const GetEncryptionPublicKeySkipConfirmationButton = (
+  props: ComponentProps<typeof Button>,
+) => {
+  return <Button {...props}>Get public key (no dialog)</Button>;
+};
+
 export const EncryptMessageButton = (props: ComponentProps<typeof Button>) => {
   return <Button {...props}>Encrypt message</Button>;
 };
