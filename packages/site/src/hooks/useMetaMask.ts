@@ -37,7 +37,12 @@ export const useMetaMask = () => {
   const getSnap = async () => {
     const snaps = (await request({
       method: 'wallet_getSnaps',
-    })) as GetSnapsResponse;
+    })) as GetSnapsResponse | null | undefined;
+
+    if (!snaps || typeof snaps !== 'object') {
+      setInstalledSnap(null);
+      return;
+    }
 
     setInstalledSnap(snaps[defaultSnapOrigin] ?? null);
   };
