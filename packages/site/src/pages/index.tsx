@@ -336,6 +336,7 @@ const Index = () => {
             disabled={!installedSnap}
           />
         )}
+        {/*
         <Card
           content={{
             title: 'Send Hello message',
@@ -355,7 +356,7 @@ const Index = () => {
             !shouldDisplayReconnectButton(installedSnap)
           }
         />
-
+        */}
         <Card
           content={{
             title: 'Get Encryption Public Key',
