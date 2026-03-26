@@ -11,7 +11,8 @@
     "lint:eslint": "eslint . --cache",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '!.yarnrc.yml' --ignore-path ../../.gitignore --no-error-on-unmatched-pattern",
-    "start": "GATSBY_TELEMETRY_DISABLED=1 gatsby develop"
+    "start": "GATSBY_TELEMETRY_DISABLED=1 gatsby develop",
+    "watch:request-light": "yarn --cwd ../../../requestNetwork/packages/request-light.js exec tsc -b tsconfig.build.json --watch"
   },
   "browserslist": {
     "production": [
@@ -27,13 +28,20 @@
   },
   "dependencies": {
     "@metamask/providers": "^22.1.0",
+    "@requestnetwork/request-light.js": "file:../../../requestNetwork/packages/request-light.js",
+    "@requestnetwork/web3-signature": "file:../../../requestNetwork/packages/web3-signature",
     "@toruslabs/eccrypto": "^7.0.0",
+    "assert": "^2.1.0",
     "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
     "secp256k1": "^5.0.1",
-    "styled-components": "5.3.3"
+    "stream-browserify": "^3.0.0",
+    "styled-components": "5.3.3",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@svgr/webpack": "^6.4.0",

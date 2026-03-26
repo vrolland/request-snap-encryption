@@ -5,11 +5,11 @@ import {
   ConnectButton,
   InstallFlaskButton,
   ReconnectButton,
-  SendHelloButton,
   GetEncryptionPublicKeyButton,
   GetEncryptionPublicKeySkipConfirmationButton,
   EncryptMessageButton,
   DecryptMessageButton,
+  CreateEncryptedRequestMockButton,
   Card,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
@@ -19,8 +19,11 @@ import {
   useMetaMaskContext,
   useRequestSnap,
 } from '../hooks';
-import { ecEncrypt } from '../utils/ec-utils';
 import { isLocalSnap, shouldDisplayReconnectButton } from '../utils';
+import { ecEncrypt } from '../utils/ec-utils';
+import { createEncryptedRequestMockStorage } from '../utils/encrypted-request-mock';
+
+const formatJsonPretty = (value: unknown) => JSON.stringify(value, null, 2);
 
 const Container = styled.div`
   display: flex;
@@ -136,6 +139,52 @@ const EncryptedBlock = styled.code`
   border-radius: ${({ theme }) => theme.radii.default};
 `;
 
+const EncryptedRequestResultBox = styled.div`
+  display: block;
+  margin-top: 1.6rem;
+  padding: 1.2rem;
+  background-color: ${({ theme }) => theme.colors.background?.alternative};
+  border: 1px solid ${({ theme }) => theme.colors.border?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
+const JsonSectionLabel = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text?.alternative};
+  margin-top: 1.2rem;
+  margin-bottom: 0.4rem;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+`;
+
+const JsonPre = styled.pre`
+  margin: 0;
+  padding: 1rem;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  font-family: ${({ theme }) => theme.fonts.code};
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 20rem;
+  overflow: auto;
+  background-color: ${({ theme }) => theme.colors.background?.default};
+  border: 1px solid ${({ theme }) => theme.colors.border?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
+const RequestIdLine = styled.code`
+  display: block;
+  padding: 0.6rem 1rem;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  word-break: break-all;
+  background-color: ${({ theme }) => theme.colors.background?.default};
+  border: 1px solid ${({ theme }) => theme.colors.border?.default};
+  border-radius: ${({ theme }) => theme.radii.default};
+`;
+
 const EncryptedError = styled.div`
   margin-top: 1.6rem;
   padding: 1rem;
@@ -147,7 +196,7 @@ const EncryptedError = styled.div`
 `;
 
 const Index = () => {
-  const { error } = useMetaMaskContext();
+  const { error, provider } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
   const requestSnap = useRequestSnap();
   const invokeSnap = useInvokeSnap();
@@ -163,14 +212,18 @@ const Index = () => {
   const [decryptedMessageError, setDecryptedMessageError] = useState<
     string | null
   >(null);
+  const [encryptedRequestResult, setEncryptedRequestResult] = useState<{
+    requestId: string;
+    paymentData: any;
+    encryptedData: any;
+  } | null>(null);
+  const [encryptedRequestError, setEncryptedRequestError] = useState<
+    string | null
+  >(null);
 
   const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
     ? isFlask
     : snapsDetected;
-
-  const handleSendHelloClick = async () => {
-    await invokeSnap({ method: 'hello' });
-  };
 
   const applySnapPublicKeyResult = (result: unknown) => {
     setPublicKey(null);
@@ -234,6 +287,27 @@ const Index = () => {
       const message =
         err instanceof Error ? err.message : 'Erreur lors du chiffrement.';
       setEncryptedMessageError(message);
+    }
+  };
+
+  const handleCreateEncryptedRequestMockClick = async () => {
+    setEncryptedRequestResult(null);
+    setEncryptedRequestError(null);
+
+    if (!provider) {
+      setEncryptedRequestError('MetaMask non disponible.');
+      return;
+    }
+
+    try {
+      const result = await createEncryptedRequestMockStorage(provider);
+      setEncryptedRequestResult(result);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Erreur lors de la création de la Request.';
+      setEncryptedRequestError(message);
     }
   };
 
@@ -336,27 +410,6 @@ const Index = () => {
             disabled={!installedSnap}
           />
         )}
-        {/*
-        <Card
-          content={{
-            title: 'Send Hello message',
-            description:
-              'Display a custom message within a confirmation screen in MetaMask.',
-            button: (
-              <SendHelloButton
-                onClick={handleSendHelloClick}
-                disabled={!installedSnap}
-              />
-            ),
-          }}
-          disabled={!installedSnap}
-          fullWidth={
-            isMetaMaskReady &&
-            Boolean(installedSnap) &&
-            !shouldDisplayReconnectButton(installedSnap)
-          }
-        />
-        */}
         <Card
           content={{
             title: 'Get Encryption Public Key',
@@ -470,6 +523,47 @@ const Index = () => {
           }
         />
 
+        <Card
+          content={{
+            title: 'Request Network (chiffrée, mock storage)',
+            description: (
+              <>
+                Crée une Request chiffrée avec{' '}
+                <code>@requestnetwork/request-light.js</code> (en mémoire, sans
+                persistance nœud), sans réseau de paiement ni
+                détection. Le compte MetaMask actuel est le payee ; signature
+                via <code>web3-signature</code>.
+                {encryptedRequestResult ? (
+                  <EncryptedRequestResultBox>
+                    <JsonSectionLabel>requestId</JsonSectionLabel>
+                    <RequestIdLine>
+                      {encryptedRequestResult.requestId}
+                    </RequestIdLine>
+                    <JsonSectionLabel>Payment data</JsonSectionLabel>
+                    <JsonPre>{formatJsonPretty(encryptedRequestResult.paymentData)}</JsonPre>
+                    <JsonSectionLabel>encryptedRequestData</JsonSectionLabel>
+                    <JsonPre>
+                      {formatJsonPretty(
+                        encryptedRequestResult.encryptedData,
+                      )}
+                    </JsonPre>
+                  </EncryptedRequestResultBox>
+                ) : null}
+                {encryptedRequestError ? (
+                  <EncryptedError>{encryptedRequestError}</EncryptedError>
+                ) : null}
+              </>
+            ),
+            button: (
+              <CreateEncryptedRequestMockButton
+                onClick={handleCreateEncryptedRequestMockClick}
+                disabled={!provider}
+              />
+            ),
+          }}
+          disabled={!provider}
+          fullWidth
+        />
 
         <Notice>
           <p>

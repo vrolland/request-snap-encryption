@@ -26,6 +26,18 @@
     "test": "yarn workspace snap run test"
   },
   "resolutions": {
+    "@requestnetwork/advanced-logic": "file:../requestNetwork/packages/advanced-logic",
+    "@requestnetwork/currency": "file:../requestNetwork/packages/currency",
+    "@requestnetwork/data-format": "file:../requestNetwork/packages/data-format",
+    "@requestnetwork/epk-signature": "file:../requestNetwork/packages/epk-signature",
+    "@requestnetwork/multi-format": "file:../requestNetwork/packages/multi-format",
+    "@requestnetwork/request-light.js": "file:../requestNetwork/packages/request-light.js",
+    "@requestnetwork/request-logic-light": "file:../requestNetwork/packages/request-logic-light",
+    "@requestnetwork/transaction-manager-light": "file:../requestNetwork/packages/transaction-manager-light",
+    "@requestnetwork/types": "file:../requestNetwork/packages/types",
+    "@requestnetwork/utils": "file:../requestNetwork/packages/utils",
+    "@requestnetwork/web3-signature": "file:../requestNetwork/packages/web3-signature",
+    "commerce-payments": "portal:./packages/commerce-payments-stub",
     "cookie": "^0.7.1",
     "path-to-regexp@0.1.10": "^0.1.12",
     "sharp": "^0.33.5",

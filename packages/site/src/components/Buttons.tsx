@@ -99,7 +99,9 @@ export const SendHelloButton = (props: ComponentProps<typeof Button>) => {
   return <Button {...props}>Send message</Button>;
 };
 
-export const GetEncryptionPublicKeyButton = (props: ComponentProps<typeof Button>) => {
+export const GetEncryptionPublicKeyButton = (
+  props: ComponentProps<typeof Button>,
+) => {
   return <Button {...props}>Get Encryption Public Key</Button>;
 };
 
@@ -115,6 +117,12 @@ export const EncryptMessageButton = (props: ComponentProps<typeof Button>) => {
 
 export const DecryptMessageButton = (props: ComponentProps<typeof Button>) => {
   return <Button {...props}>Decrypt message</Button>;
+};
+
+export const CreateEncryptedRequestMockButton = ({
+  ...props
+}: ComponentProps<typeof Button>) => {
+  return <Button {...props}>Request chiffrée (mock storage)</Button>;
 };
 
 export const HeaderButtons = () => {

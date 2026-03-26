@@ -1,0 +1,8 @@
+{
+  "name": "commerce-payments",
+  "version": "1.0.0",
+  "description": "Stub local pour satisfaire la dépendance git de @requestnetwork/smart-contracts (install Yarn). Non utilisée par le bundle site en mock storage.",
+  "main": "index.cjs",
+  "license": "MIT",
+  "private": true
+}
