@@ -5,7 +5,8 @@ import {
   Types,
   Utils,
 } from '@requestnetwork/request-light.js';
-import { Web3SignatureProvider } from '@requestnetwork/web3-signature';
+// import { Web3SignatureProvider } from '@requestnetwork/web3-signature';
+import { EthereumPrivateKeySignatureProvider } from '@requestnetwork/epk-signature';
 
 import { CHECKOUT_PAGE_CONTENT_DATA } from '../page-data/checkout-page-content-data';
 
@@ -14,12 +15,16 @@ import { CHECKOUT_PAGE_CONTENT_DATA } from '../page-data/checkout-page-content-d
  * Ne pas utiliser en production.
  */
 // const DEMO_DECRYPTION = {
-//   key: '0x4025da5692759add08f98f4b056c41c71916a671cedc7584a80d73adc7fb43c0',
+  // for 0xf17f52151EbEF6C7334FAD080c5704D77216b732
+//   key: '0xae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
 //   method: Types.Encryption.METHOD.ECIES,
 // } as const;
 
+ 	
+
 const DEMO_ENCRYPTION_PUBLIC = {
-  key: 'cf4a1d0bbef8bf0e3fa479a9def565af1b22ea6266294061bfb430701b54a83699e3d47bf52e9f0224dcc29a02721810f1f624f1f70ea3cc5f1fb752cfed379d',
+  // for 0xf17f52151EbEF6C7334FAD080c5704D77216b732
+  key: '0x02ce7edc292d7b747fab2f23584bbafaffde5c8ff17cf689969614441e0527b900',
   method: Types.Encryption.METHOD.ECIES,
 } as const;
 
@@ -41,10 +46,14 @@ const PAYMENT_NETWORK: Types.Payment.PaymentNetworkCreateParameters = {
  * sans persistance nœud), avec réseau de paiement ERC20 fee proxy sur Sepolia.
  *
  * @param ethereumProvider - Provider EIP-1193 (MetaMask).
+ * @param options.payerEncryptionPublicKey - Clé publique ECIES du payeur (ex. snap), si le client a choisi de la partager au marchand.
  * @returns Identifiant et état de la Request créée en mémoire.
  */
 export async function createEncryptedRequestMockStorage(
   ethereumProvider: MetaMaskInpageProvider,
+  options?: {
+    payerEncryptionPublicKey?: string;
+  },
 ): Promise<{
   requestId: string;
   paymentData: any;
@@ -59,9 +68,16 @@ export async function createEncryptedRequestMockStorage(
     throw new Error('Aucun compte Ethereum connecté.');
   }
 
-  const payeeAddress = address.toLowerCase();
+  // const payeeAddress = address.toLowerCase();
+  const payeeAddress = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57"
+   	
+  // const signatureProvider = new Web3SignatureProvider(ethereumProvider);
+  const signatureProvider = new EthereumPrivateKeySignatureProvider({
+    method: Types.Signature.METHOD.ECDSA,
+    // for 0x627306090abaB3A6e1400e9345bC60c78a8BEf57
+    privateKey: '0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',
+  });
 
-  const signatureProvider = new Web3SignatureProvider(ethereumProvider);
   // const decryptionProvider = new EthereumPrivateKeyDecryptionProvider(
   //   DEMO_DECRYPTION,
   // );
@@ -75,6 +91,19 @@ export async function createEncryptedRequestMockStorage(
     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
     value: payeeAddress,
   };
+
+  const payerPk = options?.payerEncryptionPublicKey?.trim();
+  const encryptionParams = [
+    DEMO_ENCRYPTION_PUBLIC,
+    ...(payerPk
+      ? [
+          {
+            key: payerPk.startsWith('0x') ? payerPk : `0x${payerPk}`,
+            method: Types.Encryption.METHOD.ECIES,
+          },
+        ]
+      : []),
+  ];
 
   const request = await requestNetwork._createEncryptedRequest(
     {
@@ -93,7 +122,7 @@ export async function createEncryptedRequestMockStorage(
       contentData: CHECKOUT_PAGE_CONTENT_DATA,
       disablePaymentDetection: true,
     },
-    [DEMO_ENCRYPTION_PUBLIC],
+    encryptionParams,
   );
   console.log("request:", request);
   const requestApiData = request.getDataForAPI()

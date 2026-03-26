@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 /**
  * Développement local : Yarn `file:` pointe vers une copie figée dans le cache.
@@ -42,4 +43,23 @@ exports.onCreateWebpackConfig = ({ actions }) => {
       }),
     ],
   });
+};
+
+/** @type {import('gatsby').GatsbyNode['onCreateDevServer']} */
+exports.onCreateDevServer = ({ app }) => {
+  // Doit correspondre à l’URL de ton API locale (ex. `PORT=8082` → `http://localhost:8082`).
+  const apiTarget =
+    process.env.GATSBY_REQUEST_API_PROXY_TARGET || 'http://localhost:8082';
+
+  app.use(
+    '/__request-api',
+    createProxyMiddleware({
+      target: apiTarget,
+      changeOrigin: true,
+      pathRewrite: {
+        '^/__request-api': '',
+      },
+      logLevel: 'warn',
+    }),
+  );
 };

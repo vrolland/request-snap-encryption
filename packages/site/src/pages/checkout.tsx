@@ -9,16 +9,9 @@ import {
   useMetaMaskContext,
   useRequestSnap,
 } from '../hooks';
+import { createSecurePaymentLight } from '../utils/secure-payment-api';
+import { createEncryptedRequestMockStorage } from '../utils/encrypted-request-mock';
 import { isLocalSnap } from '../utils';
-
-/** Paiement Request Network après partage de clé ou skip */
-const REQUEST_PAY_URL = 'https://pay.request.network/?token=01KM5MK178T5398GEXAR3H95B0';
-
-function redirectToRequestPay() {
-  if (typeof window !== 'undefined') {
-    window.location.assign(REQUEST_PAY_URL);
-  }
-}
 
 const Page = styled.main`
   flex: 1;
@@ -351,7 +344,7 @@ const OrderRef = styled.p`
  * Route Gatsby : `/checkout`
  */
 const CheckoutPage = () => {
-  const { error } = useMetaMaskContext();
+  const { error, provider } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap, getSnap } = useMetaMask();
   const requestSnap = useRequestSnap();
   const invokeSnap = useInvokeSnap();
@@ -365,21 +358,63 @@ const CheckoutPage = () => {
   >('shareKey');
   const [shareEncryptionKeyWithMerchant, setShareEncryptionKeyWithMerchant] =
     useState(false);
+  /** Création request-light + POST /v2/secure-payments */
+  const [securePaymentError, setSecurePaymentError] = useState<string | null>(
+    null,
+  );
+  const [securePaymentBusy, setSecurePaymentBusy] = useState(false);
 
   const closeModal = useCallback(() => {
     setModalOpen(false);
     setModalStep('shareKey');
     setKeyShareError(null);
     setShareEncryptionKeyWithMerchant(false);
+    setSecurePaymentError(null);
   }, []);
 
   const openPaymentModal = useCallback(() => {
     setModalStep('shareKey');
     setKeyShareError(null);
+    setSecurePaymentError(null);
     setShareEncryptionKeyWithMerchant(false);
     setModalOpen(true);
     void getSnap();
   }, [getSnap]);
+
+  const runSecurePaymentFlow = useCallback(
+    async (payerEncryptionPublicKey?: string) => {
+      if (!provider) {
+        throw new Error(
+          'Wallet introuvable. Utilisez un navigateur avec MetaMask.',
+        );
+      }
+      const { requestId, paymentData, encryptedData } =
+        await createEncryptedRequestMockStorage(provider, {
+          payerEncryptionPublicKey,
+        });
+      const { securePaymentUrl } = await createSecurePaymentLight({
+        requests: [{ requestId, paymentData, encryptedData }],
+      });
+      if (typeof window !== 'undefined') {
+        window.location.assign(securePaymentUrl);
+      }
+    },
+    [provider],
+  );
+
+  const startSecurePaymentCheckout = useCallback(async () => {
+    setSecurePaymentError(null);
+    setSecurePaymentBusy(true);
+    try {
+      await runSecurePaymentFlow();
+    } catch (e) {
+      setSecurePaymentError(
+        e instanceof Error ? e.message : String(e),
+      );
+    } finally {
+      setSecurePaymentBusy(false);
+    }
+  }, [runSecurePaymentFlow]);
 
   useEffect(() => {
     if (!modalOpen) {
@@ -418,20 +453,22 @@ const CheckoutPage = () => {
     setKeyShareBusy(true);
     try {
       const result = await invokeSnap({ method: 'getEncryptionPublicKey' });
+      let payerPk: string | undefined;
       if (typeof result === 'string' && result.length > 0) {
-        redirectToRequestPay();
-        return;
-      }
-      if (result && typeof result === 'object' && 'publicKey' in result) {
+        payerPk = result;
+      } else if (result && typeof result === 'object' && 'publicKey' in result) {
         const pk = String((result as { publicKey: unknown }).publicKey);
         if (pk) {
-          redirectToRequestPay();
-          return;
+          payerPk = pk;
         }
       }
-      setKeyShareError(
-        'Impossible de récupérer la clé publique. Vérifiez que le snap est à jour et réessayez.',
-      );
+      if (!payerPk) {
+        setKeyShareError(
+          'Impossible de récupérer la clé publique. Vérifiez que le snap est à jour et réessayez.',
+        );
+        return;
+      }
+      await runSecurePaymentFlow(payerPk);
     } catch (e: unknown) {
       setKeyShareError(
         e instanceof Error ? e.message : 'Erreur lors de la demande de clé.',
@@ -448,8 +485,9 @@ const CheckoutPage = () => {
 
   const handleProceedToPayment = () => {
     setKeyShareError(null);
+    setSecurePaymentError(null);
     if (!shareEncryptionKeyWithMerchant) {
-      redirectToRequestPay();
+      void startSecurePaymentCheckout();
       return;
     }
     if (!isMetaMaskReady) {
@@ -548,9 +586,11 @@ const CheckoutPage = () => {
             <PaymentZone>
               <PaymentZoneTitle>Request Network</PaymentZoneTitle>
               <PaymentIntro>
-                Paiement Request Network : choisissez si vous partagez votre
-                clé d’encryption avec le marchand, puis accédez à la page de
-                paiement.
+                Paiement Request Network : une requête chiffrée est créée
+                puis enregistrée via l’API (v2 secure-payments). Configurez
+                GATSBY_REQUEST_API_CLIENT_ID (ou GATSBY_REQUEST_API_KEY) au
+                build. Vous êtes ensuite redirigé vers la page de paiement
+                sécurisée.
               </PaymentIntro>
               <PrimaryButton type="button" onClick={openPaymentModal}>
                 Pay with Request Network
@@ -616,16 +656,16 @@ const CheckoutPage = () => {
                       <ActionRow>
                         <PrimaryButton
                           type="button"
-                          disabled={keyShareBusy}
+                          disabled={keyShareBusy || securePaymentBusy}
                           onClick={handleProceedToPayment}
                         >
-                          {keyShareBusy
-                            ? 'Demande en cours…'
+                          {keyShareBusy || securePaymentBusy
+                            ? 'Préparation du paiement…'
                             : 'Proceed to payment'}
                         </PrimaryButton>
                         <SecondaryButton
                           type="button"
-                          disabled={keyShareBusy}
+                          disabled={keyShareBusy || securePaymentBusy}
                           onClick={handleCancelModal}
                         >
                           Cancel
@@ -633,6 +673,9 @@ const CheckoutPage = () => {
                       </ActionRow>
                       {keyShareError ? (
                         <PaymentError>{keyShareError}</PaymentError>
+                      ) : null}
+                      {securePaymentError ? (
+                        <PaymentError>{securePaymentError}</PaymentError>
                       ) : null}
                     </>
                   ) : null}
