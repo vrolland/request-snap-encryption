@@ -1,53 +1,65 @@
-# @metamask/template-snap-monorepo
+# Request Snap Encryption
 
-This repository demonstrates how to develop a snap with TypeScript. For detailed
-instructions, see [the MetaMask documentation](https://docs.metamask.io/guide/snaps.html#serving-a-snap-to-your-local-environment).
+This repository contains a MetaMask Snap (`packages/snap`) and a demo website
+(`packages/site`) used to interact with the snap locally.
 
-MetaMask Snaps is a system that allows anyone to safely expand the capabilities
-of MetaMask. A _snap_ is a program that we run in an isolated environment that
-can customize the wallet experience.
+## Prerequisites
 
-## Snaps is pre-release software
+- Node.js `>= 18.6.0`
+- Yarn `3.x`
+- [MetaMask Flask](https://metamask.io/flask/) (required to load local snaps)
 
-To interact with (your) Snaps, you will need to install [MetaMask Flask](https://metamask.io/flask/),
-a canary distribution for developers that provides access to upcoming features.
+## Install dependencies
 
-## Getting Started
-
-Clone the template-snap repository [using this template](https://github.com/MetaMask/template-snap-monorepo/generate)
-and set up the development environment:
+From the repository root:
 
 ```shell
-yarn install && yarn start
+yarn install
 ```
 
-## Cloning
+## Start everything (recommended)
 
-This repository contains GitHub Actions that you may find useful, see
-`.github/workflows` and [Releasing & Publishing](https://github.com/MetaMask/template-snap-monorepo/edit/main/README.md#releasing--publishing)
-below for more information.
+Run both the website and the snap watcher in parallel:
 
-If you clone or create this repository outside the MetaMask GitHub organization,
-you probably want to run `./scripts/cleanup.sh` to remove some files that will
-not work properly outside the MetaMask GitHub organization.
+```shell
+yarn start
+```
 
-If you don't wish to use any of the existing GitHub actions in this repository,
-simply delete the `.github/workflows` directory.
+This command starts:
+- the Gatsby website (`packages/site`)
+- the snap watcher (`packages/snap`)
 
-## Contributing
+Keep this terminal running while developing.
 
-### Testing and Linting
+## Start each part separately (optional)
 
-Run `yarn test` to run the tests once.
+If you prefer separate terminals:
 
-Run `yarn lint` to run the linter, or run `yarn lint:fix` to run the linter and
-fix any automatically fixable issues.
+### 1) Start the website
 
-### Using NPM packages with scripts
+```shell
+yarn workspace site start
+```
 
-Scripts are disabled by default for security reasons. If you need to use NPM
-packages with scripts, you can run `yarn allow-scripts auto`, and enable the
-script in the `lavamoat.allowScripts` section of `package.json`.
+### 2) Start the snap
 
-See the documentation for [@lavamoat/allow-scripts](https://github.com/LavaMoat/LavaMoat/tree/main/packages/allow-scripts)
-for more information.
+```shell
+yarn workspace snap start
+```
+
+To serve the snap bundle without watch mode, use:
+
+```shell
+yarn workspace snap serve
+```
+
+## Connect the snap in MetaMask Flask
+
+1. Open MetaMask Flask in your browser.
+2. Open the local website URL shown in the terminal.
+3. Use the website UI to connect/install the local snap. (http://localhost:8000)
+4. Approve the permission requests in MetaMask Flask.
+
+If the website cannot connect to the snap, ensure both the site and snap
+processes are still running.
+
