@@ -4283,7 +4283,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/snaps-sdk@npm:^10.1.0, @metamask/snaps-sdk@npm:^10.2.0, @metamask/snaps-sdk@npm:^10.3.0, @metamask/snaps-sdk@npm:~10.3.0":
+"@metamask/snaps-sdk@npm:^10.1.0, @metamask/snaps-sdk@npm:^10.2.0, @metamask/snaps-sdk@npm:^10.3.0":
   version: 10.3.0
   resolution: "@metamask/snaps-sdk@npm:10.3.0"
   dependencies:
@@ -4307,6 +4307,20 @@ __metadata:
     "@metamask/superstruct": ^3.2.1
     "@metamask/utils": ^11.4.2
   checksum: 0ddffc266c3802ab97724af94d07356ac8e55d91030d3f246e5f2c9154c61e8eae6f0b320cafd9bd8eca245d83c5603d0aae8c7426ed12496d512728970f4153
+  languageName: node
+  linkType: hard
+
+"@metamask/snaps-sdk@npm:~11.1.0":
+  version: 11.1.0
+  resolution: "@metamask/snaps-sdk@npm:11.1.0"
+  dependencies:
+    "@metamask/key-tree": ^10.1.1
+    "@metamask/providers": ^22.1.1
+    "@metamask/rpc-errors": ^7.0.3
+    "@metamask/superstruct": ^3.2.1
+    "@metamask/utils": ^11.11.0
+    luxon: ^3.5.0
+  checksum: 65ea6ca550c6f377eb64591425ddf5bf5e231f2376642007240a63bd3f10d1a5aa423cf28908037968ebb8dbcabbb52a15997d4995d40cc977df9721fd34dba2
   languageName: node
   linkType: hard
 
@@ -4407,6 +4421,25 @@ __metadata:
     semver: ^7.5.4
     uuid: ^9.0.1
   checksum: 467d9c1835dfe9bf9f67af0e0a472ca1805aa7f7a3969f439e4d14d9db2fa9c8da7611c8299c81f65ef6a63cb72725b227bac28080ed467375115c3ad6227d7a
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^11.11.0":
+  version: 11.11.0
+  resolution: "@metamask/utils@npm:11.11.0"
+  dependencies:
+    "@ethereumjs/tx": ^4.2.0
+    "@metamask/superstruct": ^3.1.0
+    "@noble/hashes": ^1.3.1
+    "@scure/base": ^1.1.3
+    "@types/debug": ^4.1.7
+    "@types/lodash": ^4.17.20
+    debug: ^4.3.4
+    lodash: ^4.17.21
+    pony-cause: ^2.1.10
+    semver: ^7.5.4
+    uuid: ^9.0.1
+  checksum: baf071b2e29ad1947794408f01861356199f24732dfd19e4b42e24f39e71b098768cf4fb2020466ab9a5c67e4ddde96b530a8cfa404a92d874b622a8b0d1a1e4
   languageName: node
   linkType: hard
 
@@ -5457,19 +5490,19 @@ __metadata:
 
 "@requestnetwork/advanced-logic@file:../requestNetwork/packages/advanced-logic::locator=root%40workspace%3A.":
   version: 0.57.0
-  resolution: "@requestnetwork/advanced-logic@file:../requestNetwork/packages/advanced-logic#../requestNetwork/packages/advanced-logic::hash=f35283&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/advanced-logic@file:../requestNetwork/packages/advanced-logic#../requestNetwork/packages/advanced-logic::hash=b28601&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/currency": 0.31.0
     "@requestnetwork/types": 0.57.0
     "@requestnetwork/utils": 0.57.0
     tslib: 2.8.1
-  checksum: c0d81ea661e2769a5c2a5dabc7aadd19738dc888a039b0e31ce16102dfa92a728987df95f4b8f6c249ea9a7dd4e2fad4e64e934e9232a2f5c60770b5ae99a85e
+  checksum: 0cb2c23aeb71c0c79788216f75569f229a0d42e0e80ff2061755abd1ce5482854794445908219e55d6016cecc4b5b901b3a539d48096352e9bab75733929c84f
   languageName: node
   linkType: hard
 
 "@requestnetwork/currency@file:../requestNetwork/packages/currency::locator=root%40workspace%3A.":
   version: 0.31.0
-  resolution: "@requestnetwork/currency@file:../requestNetwork/packages/currency#../requestNetwork/packages/currency::hash=141083&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/currency@file:../requestNetwork/packages/currency#../requestNetwork/packages/currency::hash=72e8e6&locator=root%40workspace%3A."
   dependencies:
     "@metamask/contract-metadata": 1.31.0
     "@mysten/sui": 1.45.0
@@ -5481,46 +5514,46 @@ __metadata:
     node-dijkstra: 2.5.0
     starknet: 9.2.1
     tslib: 2.8.1
-  checksum: 7fb83c224f8c856afac9655f4d7f2207eda1b232d1e249ddd1adcdf6fac62fc6bd749528cee524c3f27653590eadaf5bdf6e0cb0e098e26ec4956680f520271f
+  checksum: 4ab277d81a57f4227b2301e5a40277b5b35ef4b5c191bd2c42d80988d3b361d8db5d03df7145662079d9c02789cf2c6aeb233d60af5e10c9ca01553d1cb032fe
   languageName: node
   linkType: hard
 
 "@requestnetwork/data-format@file:../requestNetwork/packages/data-format::locator=root%40workspace%3A.":
   version: 0.23.0
-  resolution: "@requestnetwork/data-format@file:../requestNetwork/packages/data-format#../requestNetwork/packages/data-format::hash=93bb8d&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/data-format@file:../requestNetwork/packages/data-format#../requestNetwork/packages/data-format::hash=600c78&locator=root%40workspace%3A."
   dependencies:
     ajv: 8.17.1
     ajv-formats: 3.0.1
     ethers: 5.7.2
     tslib: 2.8.1
-  checksum: 87c04c1734c4673bfd192f89317c2ce1d0c541242f392e59c81857a7dc3b58a7802c0cc3da4070909dd5f584c4f881955a31108788ffa1b477b032d7ad610561
+  checksum: 34d054654e8c664908279b5cc8433ccc5aa279d4a84b7698c555d4cbbcc8275889d3c09d0f30b9d76a80f7f8c131bf8169e64b2a0ff740680f1736e0ac3e8f9d
   languageName: node
   linkType: hard
 
 "@requestnetwork/epk-signature@file:../requestNetwork/packages/epk-signature::locator=root%40workspace%3A.":
   version: 0.13.0
-  resolution: "@requestnetwork/epk-signature@file:../requestNetwork/packages/epk-signature#../requestNetwork/packages/epk-signature::hash=f16160&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/epk-signature@file:../requestNetwork/packages/epk-signature#../requestNetwork/packages/epk-signature::hash=97b483&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/types": 0.57.0
     "@requestnetwork/utils": 0.57.0
     tslib: 2.8.1
-  checksum: 48327ffb9dba9c2f0e929a98aa673133642c39b9d944cfbddb0fdadded3adfff68def1652d5eda480d9b651de32b40579d4a363d79c0135f7761443e06868bc3
+  checksum: cdfda7c615324a6d9211fa93612698ba7c99a5bfb53e8728591a982223a5a2f8c7c8f70a1743714aa173c48a981fbde5b1a7bfaab68c9b3b1fecf8e05d9052b7
   languageName: node
   linkType: hard
 
 "@requestnetwork/multi-format@file:../requestNetwork/packages/multi-format::locator=root%40workspace%3A.":
   version: 0.31.0
-  resolution: "@requestnetwork/multi-format@file:../requestNetwork/packages/multi-format#../requestNetwork/packages/multi-format::hash=ef92c1&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/multi-format@file:../requestNetwork/packages/multi-format#../requestNetwork/packages/multi-format::hash=6b57b7&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/types": 0.57.0
     tslib: 2.8.1
-  checksum: d60eaa9f2aedc560ef76b11ce266c5728a2bfd842823be5647433b61ac0e004197f54503ae5e481b3f469a904013548fa7fc6f499fe32185e97b7d673594f7f8
+  checksum: 4ae8340c57879361ed5b6c4868f4ee9fbb729432fb414d46a88eb52f4c7034a8888e0cd92571ab14a41610744113a739d2685421ef110cc236a253b49eb3d23b
   languageName: node
   linkType: hard
 
 "@requestnetwork/request-light.js@file:../requestNetwork/packages/request-light.js::locator=root%40workspace%3A.":
   version: 0.62.0
-  resolution: "@requestnetwork/request-light.js@file:../requestNetwork/packages/request-light.js#../requestNetwork/packages/request-light.js::hash=d47c7c&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/request-light.js@file:../requestNetwork/packages/request-light.js#../requestNetwork/packages/request-light.js::hash=ff8a58&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/advanced-logic": 0.57.0
     "@requestnetwork/currency": 0.31.0
@@ -5534,13 +5567,13 @@ __metadata:
     ethers: 5.7.2
     qs: 6.11.2
     tslib: 2.8.1
-  checksum: 88b43752e499f39688768adb66ba2c0edf9b1c9fc4fd026df9de8b3b8fde3fd67d39c6786a27cd793054914a036e1c762f403628e785131da237f5a3b84c01a6
+  checksum: 02c321fe921f2525e89b9a2a87515331951b721dbc3d5726c195caf00efddec1a14fc509a9e16d4e6106dc89cf57e09f31fc8fdcda1e7317bc6b90a8ff2fbc92
   languageName: node
   linkType: hard
 
 "@requestnetwork/request-logic-light@file:../requestNetwork/packages/request-logic-light::locator=root%40workspace%3A.":
   version: 0.47.0
-  resolution: "@requestnetwork/request-logic-light@file:../requestNetwork/packages/request-logic-light#../requestNetwork/packages/request-logic-light::hash=af7d50&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/request-logic-light@file:../requestNetwork/packages/request-logic-light#../requestNetwork/packages/request-logic-light::hash=46d9ab&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/advanced-logic": 0.57.0
     "@requestnetwork/multi-format": 0.31.0
@@ -5548,54 +5581,54 @@ __metadata:
     "@requestnetwork/utils": 0.57.0
     semver: 7.5.4
     tslib: 2.8.1
-  checksum: 7a7866d7c1c7faaa3c43c393e719fb0f2e07d435d0df74d443f1321d289151f98bdc96c53a42df35d5568cddc129c600732cfba58c66179392635409f3f06740
+  checksum: 75218a8fbab71cf10b384889501c376b70e83ae62b5cfbb55054407245546800d7f61889cf649064098d5ab5e39540d6a1e1280a6866007e0e6cb6172ed4a39f
   languageName: node
   linkType: hard
 
 "@requestnetwork/transaction-manager-light@file:../requestNetwork/packages/transaction-manager-light::locator=root%40workspace%3A.":
   version: 0.48.0
-  resolution: "@requestnetwork/transaction-manager-light@file:../requestNetwork/packages/transaction-manager-light#../requestNetwork/packages/transaction-manager-light::hash=cd25c2&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/transaction-manager-light@file:../requestNetwork/packages/transaction-manager-light#../requestNetwork/packages/transaction-manager-light::hash=805d9d&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/multi-format": 0.31.0
     "@requestnetwork/types": 0.57.0
     "@requestnetwork/utils": 0.57.0
     tslib: 2.8.1
-  checksum: 8dcf91dbc073e506da41ccd242f73cb0e1eb62a161d7fd569f5164bc91a6d15dc3fcdd88d03a608dd460ecb6638f25ef1797f1efbdf4155c5172cbdcf354bd76
+  checksum: ef22f163d2a41a05167eb5a7be89addd03d3f313bb9f5706e2db3da701adc058b2c8b12a2495e851586ae7e6d6b2cc3308ffce9068d29cbf1a04b8bae53c6ba5
   languageName: node
   linkType: hard
 
 "@requestnetwork/types@file:../requestNetwork/packages/types::locator=root%40workspace%3A.":
   version: 0.57.0
-  resolution: "@requestnetwork/types@file:../requestNetwork/packages/types#../requestNetwork/packages/types::hash=1a8dc0&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/types@file:../requestNetwork/packages/types#../requestNetwork/packages/types::hash=55e180&locator=root%40workspace%3A."
   dependencies:
     "@lit-protocol/types": 7.0.5
     ethers: 5.7.2
-  checksum: eb84f65d1adf6a5a03608baf568acdaacda8730e850d56c97e0f5da12590cf276793ec3733720eced3bd473cd5392db918862d534693748b4da101b85e80ebea
+  checksum: 86ea11c6a2d5474a882116df9961420b1aaee2513f7cc668d043accd538998a53f701c4afee91280acd205172479bc7161f025f3514d04ff39047ca96eb0e241
   languageName: node
   linkType: hard
 
 "@requestnetwork/utils@file:../requestNetwork/packages/utils::locator=root%40workspace%3A.":
   version: 0.57.0
-  resolution: "@requestnetwork/utils@file:../requestNetwork/packages/utils#../requestNetwork/packages/utils::hash=b392bd&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/utils@file:../requestNetwork/packages/utils#../requestNetwork/packages/utils::hash=36e0a8&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/types": 0.57.0
     "@toruslabs/eccrypto": 4.0.0
     ethers: 5.7.2
     secp256k1: 4.0.4
     tslib: 2.8.1
-  checksum: 1f71f3185fc146f8c1b228da3dec0034a35532218d24f7a0821080c4b130abf98d1e037c5a2a5813a96e8c5878d12330b86bb76df0bd1935592866989e91394d
+  checksum: 201767aeb712c57467a6d2ced60f26c9906ba279d553b98fe1fc90526b11aff42c784dbde891f2cbc8a9595a84e18f2711152cb8d7b7ba83dc1ca30fb845f518
   languageName: node
   linkType: hard
 
 "@requestnetwork/web3-signature@file:../requestNetwork/packages/web3-signature::locator=root%40workspace%3A.":
   version: 0.12.0
-  resolution: "@requestnetwork/web3-signature@file:../requestNetwork/packages/web3-signature#../requestNetwork/packages/web3-signature::hash=5656ea&locator=root%40workspace%3A."
+  resolution: "@requestnetwork/web3-signature@file:../requestNetwork/packages/web3-signature#../requestNetwork/packages/web3-signature::hash=c997bf&locator=root%40workspace%3A."
   dependencies:
     "@requestnetwork/types": 0.57.0
     "@requestnetwork/utils": 0.57.0
     ethers: 5.7.2
     tslib: 2.8.1
-  checksum: 94fd4e5b475532edb68198373c51e5549169a217ca4361abdc40727e2c4c490365d747357ccfd18ffccccbfdd9d9d485c900edca0c5fae6a105b5e2fd32dd4b6
+  checksum: c2c194f5132cd0e8e44a9a139f90f4fb6a928dad6d8619f38cc7fe2aa3ce53d53c1e6ead9a18b2fae9bfb51a69d8bea5e18c3625cdee2e432dc38a8650762281
   languageName: node
   linkType: hard
 
@@ -19829,7 +19862,7 @@ __metadata:
     "@jest/globals": ^29.5.0
     "@metamask/snaps-cli": ^8.3.0
     "@metamask/snaps-jest": ^9.8.0
-    "@metamask/snaps-sdk": ~10.3.0
+    "@metamask/snaps-sdk": ~11.1.0
     "@toruslabs/eccrypto": ^7.0.0
     "@types/react": 18.2.4
     "@types/react-dom": 18.2.4
